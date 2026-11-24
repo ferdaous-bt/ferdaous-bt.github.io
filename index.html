@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ferdaous Ben Taleb Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout idea: soft pastel field, glass cards, a live k-means plot as the hero instead of a portrait. Single theme by choice. */
+:root{
+  color-scheme:light;
+  --bg1:#FCF2EC;--bg2:#F4EAF3;--bg3:#E7E5FA;
+  --ink:#231E33;--mute:#5F5870;
+  --a:#5B4BC4;--b:#B5406D;
+  --t1:#E2DCFA;--t2:#F8DDE6;
+  --glass:rgba(255,255,255,.62);--line:rgba(35,30,51,.1);
+  --sh:0 16px 40px rgba(60,45,120,.12);
+  --sans:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --ser:"Fraunces",Georgia,"Times New Roman",serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+:root[data-mood="lagoon"]{--bg1:#EEF7F4;--bg2:#E6F1F6;--bg3:#E1E6FA;--a:#0B6E78;--b:#4450B8;--t1:#D2ECEC;--t2:#DDE1FA;--sh:0 16px 40px rgba(20,90,110,.13)}
+:root[data-mood="sunset"]{--bg1:#FFF3E6;--bg2:#FCE9E4;--bg3:#F6E2EE;--a:#B04A14;--b:#A8346A;--t1:#FBE0C8;--t2:#F7D9E6;--sh:0 16px 40px rgba(150,70,30,.13)}
+:root[data-mood="sage"]{--bg1:#F3F6EC;--bg2:#ECF3EC;--bg3:#EDE7F3;--a:#2E6A4B;--b:#86457A;--t1:#DAEBDD;--t2:#EEDDEB;--sh:0 16px 40px rgba(40,90,60,.13)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:96px}
+body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--bg2) linear-gradient(165deg,var(--bg1),var(--bg2) 50%,var(--bg3)) fixed;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;transition:background-color .5s}
+a{color:inherit}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{text-wrap:balance;letter-spacing:-.03em;line-height:1.05;font-weight:600}
+em{font-family:var(--ser);font-style:italic;font-weight:400;color:var(--b);letter-spacing:-.01em}
+:focus-visible{outline:3px solid var(--a);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1140px;margin:0 auto;padding:0 24px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--b)}
+.glass{background:var(--glass);border:1px solid rgba(255,255,255,.85);border-radius:28px;box-shadow:var(--sh);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.btn{display:inline-flex;align-items:center;gap:10px;min-height:50px;padding:0 24px;border-radius:999px;font:600 15px var(--sans);text-decoration:none;border:1.5px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s}
+.btn:hover{transform:translateY(-3px)}
+.btn.fill{background:var(--a);border-color:var(--a);color:#fff;box-shadow:0 12px 26px color-mix(in srgb,var(--a) 35%,transparent)}
+.btn .ar{transition:transform .3s}.btn:hover .ar{transform:translateX(5px)}
+
+/* nav */
+header.nav{position:sticky;top:0;z-index:20;padding:14px 0}
+.navrow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.logo{display:inline-flex;align-items:center;gap:10px;font-weight:700;text-decoration:none}
+.logo b{font:italic 500 28px var(--ser);color:var(--b)}
+.pill{display:flex;gap:2px;padding:5px;border-radius:999px;flex-wrap:wrap}
+.pill a{padding:10px 16px;border-radius:999px;font-size:14px;font-weight:500;text-decoration:none;transition:background .25s,color .25s}
+.pill a:hover{background:var(--t1)}
+.pill a.on{background:var(--a);color:#fff}
+.soc{display:flex;gap:8px}
+.soc a{width:44px;height:44px;border-radius:14px;background:var(--a);color:#fff;display:grid;place-items:center;transition:transform .3s}
+.soc a:hover{transform:translateY(-3px) rotate(-4deg)}
+
+/* hero */
+.hero{position:relative;padding:36px 0 56px}
+.ghost{position:absolute;inset:auto 0 auto 0;top:6px;text-align:center;font-weight:700;font-size:clamp(70px,17vw,230px);line-height:1;letter-spacing:-.04em;color:transparent;-webkit-text-stroke:1.5px color-mix(in srgb,var(--b) 22%,transparent);pointer-events:none;user-select:none;white-space:nowrap}
+.herogrid{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:40px;align-items:center;padding-top:clamp(40px,7vw,96px)}
+.hero h1{font-size:clamp(40px,5.4vw,70px)}
+.hero p.lead{font-size:17px;color:var(--mute);max-width:52ch;margin-top:20px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.status{display:inline-flex;align-items:center;gap:10px;padding:8px 16px;border-radius:999px;font-size:13px;font-weight:600;margin-bottom:22px}
+.dot{position:relative;width:9px;height:9px;border-radius:50%;background:var(--b)}
+.dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--b);animation:ping 1.8s infinite}
+@keyframes ping{to{transform:scale(2.6);opacity:0}}
+.plot{padding:16px;position:relative}
+.plothead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:4px 6px 12px;font-family:var(--mono);font-size:12px;color:var(--mute)}
+.plothead strong{color:var(--ink);font-weight:500}
+#km{display:block;width:100%;height:340px;border-radius:18px;background:rgba(255,255,255,.55);cursor:crosshair;touch-action:manipulation}
+.plotfoot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 4px 2px}
+.plotfoot span{font-size:13px;color:var(--mute)}
+.mini{display:flex;gap:6px}
+.mini button{min-width:44px;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:#fff;font:600 13px var(--sans);color:var(--ink);cursor:pointer;transition:background .2s,color .2s}
+.mini button:hover{background:var(--a);color:#fff}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:40px}
+.stat{padding:20px 22px;border-radius:22px}
+.stat b{display:block;font-size:clamp(28px,3.4vw,40px);font-weight:600;letter-spacing:-.03em;color:var(--a);font-variant-numeric:tabular-nums;line-height:1.1}
+.stat span{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+
+/* marquee */
+.mq{overflow:hidden;white-space:nowrap;padding:18px 0;border-block:1px solid var(--line);margin:8px 0 0}
+.mq div{display:inline-flex;animation:slide 34s linear infinite}
+.mq:hover div{animation-play-state:paused}
+.mq span{font-size:clamp(22px,3vw,34px);font-weight:600;letter-spacing:-.02em;padding:0 22px;display:inline-flex;align-items:center;gap:44px}
+.mq span::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--b);opacity:.7}
+.mq span:nth-child(even){color:var(--a);font-family:var(--ser);font-style:italic;font-weight:400}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+section{padding:88px 0 0}
+.sechead{display:flex;flex-direction:column;gap:14px;margin-bottom:36px}
+.sechead h2{font-size:clamp(34px,5vw,64px)}
+.sechead p{color:var(--mute);max-width:60ch}
+
+/* about */
+.about{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr) minmax(0,.8fr);gap:36px;align-items:start}
+.about h3{font-size:26px;margin-bottom:14px}
+.about .txt p{color:var(--mute);margin-bottom:14px;max-width:44ch}
+.flipwrap{perspective:1400px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.clip{width:22px;height:40px;border-radius:8px;background:linear-gradient(var(--a),color-mix(in srgb,var(--a) 60%,#fff));margin-bottom:-18px;z-index:2;box-shadow:0 6px 12px rgba(0,0,0,.12)}
+.flip{width:100%;max-width:300px;aspect-ratio:3/4.3;border:0;padding:0;background:none;cursor:pointer;font:inherit;color:inherit;text-align:left}
+.flipin{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+.flip[aria-pressed="true"] .flipin{transform:rotateY(180deg)}
+@media (hover:hover){.flip:hover .flipin{transform:rotateY(180deg)}.flip[aria-pressed="true"]:hover .flipin{transform:rotateY(0)}}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:24px;overflow:hidden;background:#fff;box-shadow:var(--sh);display:flex;flex-direction:column}
+.face.back{transform:rotateY(180deg);background:var(--a);color:#fff;padding:26px;gap:14px}
+.idtop{background:var(--b);color:#fff;padding:14px 18px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;display:flex;justify-content:space-between}
+.idbody{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:18px;text-align:center}
+.mono-av{width:112px;height:112px;border-radius:30px;background:linear-gradient(135deg,var(--t1),var(--t2));display:grid;place-items:center;font:italic 500 50px var(--ser);color:var(--a)}
+.idphoto{width:62%;max-width:100%;height:auto;aspect-ratio:1/1.08;object-fit:cover;object-position:50% 22%;border-radius:26px;background:var(--t1);box-shadow:0 10px 24px rgba(35,30,51,.16)}
+.me{display:flex;align-items:center;gap:14px;margin-top:22px}
+.me img{width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:50% 20%;border:3px solid #fff;box-shadow:var(--sh);flex:0 0 auto}
+.me p{font-size:17px;color:var(--mute);max-width:48ch}
+.idbody strong{font-size:20px;letter-spacing:-.02em}
+.idbody small{color:var(--mute);font-size:13px}
+.idgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;padding:14px 18px;border-top:1px dashed var(--line);font-size:12px}
+.idgrid span{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.back h3{font:italic 400 30px var(--ser);letter-spacing:0;color:#fff}
+.back ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px;font-size:14px}
+.back li{padding-bottom:9px;border-bottom:1px solid rgba(255,255,255,.25)}
+.hint{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.facts{display:flex;flex-direction:column;gap:16px}
+.facts div{padding-bottom:14px;border-bottom:1px solid var(--line)}
+.facts span{display:block;font-size:13px;color:var(--mute)}
+.facts b{font-size:17px;font-weight:600;letter-spacing:-.01em}
+
+/* projects */
+.proj{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px}
+.card{grid-column:span 2;padding:22px;display:flex;flex-direction:column;gap:16px;transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s;will-change:transform}
+.card.big{grid-column:span 6;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;padding:28px}
+.card:hover{box-shadow:0 26px 54px color-mix(in srgb,var(--a) 22%,transparent)}
+.card h3{font-size:24px}
+.card.big h3{font-size:clamp(28px,3.4vw,40px)}
+.card p{color:var(--mute);font-size:15px}
+.kind{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);display:flex;justify-content:space-between;gap:8px}
+.viz{border-radius:18px;padding:18px;background:linear-gradient(140deg,var(--t1),var(--t2));display:flex;flex-direction:column;gap:12px;justify-content:center;min-height:170px}
+.viz .cap{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--mute)}
+.bar{display:grid;grid-template-columns:92px minmax(0,1fr) 52px;gap:10px;align-items:center;font-size:13px}
+.bar i{display:block;height:14px;border-radius:999px;background:rgba(255,255,255,.7);overflow:hidden}
+.bar i u{display:block;height:100%;border-radius:999px;background:var(--a);transform-origin:left}
+.bar.alt i u{background:var(--b)}
+.bar b{font-variant-numeric:tabular-nums;text-align:right}
+.in .bar i u{animation:grow 1.2s cubic-bezier(.2,.8,.2,1) both}
+@keyframes grow{from{transform:scaleX(0)}}
+.ring{display:flex;align-items:center;gap:18px}
+.ring svg{flex:0 0 auto}
+.ring circle.v{stroke:var(--a);transition:stroke .4s}
+.in .ring circle.v{animation:dash 1.4s cubic-bezier(.2,.8,.2,1) both}
+@keyframes dash{from{stroke-dashoffset:264}}
+.ring b{font-size:30px;letter-spacing:-.03em;line-height:1;display:block}
+.ring span{font-size:13px;color:var(--mute)}
+.mets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.met{background:#fff;border-radius:16px;padding:14px}
+.met b{display:block;font-size:24px;letter-spacing:-.03em;color:var(--a);font-variant-numeric:tabular-nums;line-height:1.15}
+.met span{font-size:12px;color:var(--mute);line-height:1.35;display:block}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tags span{padding:5px 12px;border-radius:999px;background:#fff;font-size:12px;font-weight:600}
+.card ul{margin:0;padding-left:18px;color:var(--mute);font-size:15px;display:flex;flex-direction:column;gap:6px}
+.more{margin-top:auto;font-weight:600;font-size:14px;text-decoration:none;display:inline-flex;gap:8px;align-items:center;padding:10px 0;color:var(--a)}
+.more:hover span{transform:translate(3px,-3px)}.more span{transition:transform .3s}
+
+/* experience */
+.tl{display:grid;gap:18px;position:relative;padding-left:28px}
+.tl::before{content:"";position:absolute;left:7px;top:10px;bottom:10px;width:2px;background:linear-gradient(var(--a),var(--b));border-radius:2px}
+.job{padding:24px 26px;position:relative}
+.job::before{content:"";position:absolute;left:-28px;top:30px;width:16px;height:16px;border-radius:50%;background:#fff;border:4px solid var(--a)}
+.jobtop{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline;margin-bottom:6px}
+.job h3{font-size:24px}
+.job .when{font-family:var(--mono);font-size:12px;color:var(--mute)}
+.job .role{color:var(--b);font-weight:600;font-size:15px;margin-bottom:12px}
+.job ul{margin:0;padding-left:18px;color:var(--mute);display:flex;flex-direction:column;gap:6px;max-width:80ch}
+
+/* skills */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.filters button{min-height:44px;padding:0 18px;border-radius:999px;border:1px solid rgba(255,255,255,.9);background:var(--glass);font:600 14px var(--sans);color:var(--ink);cursor:pointer;transition:background .25s,color .25s,transform .25s}
+.filters button:hover{transform:translateY(-2px)}
+.filters button[aria-pressed="true"]{background:var(--a);color:#fff;border-color:var(--a)}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{padding:12px 18px;border-radius:16px;font-weight:600;font-size:15px;background:var(--t1);transition:opacity .35s,transform .35s,background .4s}
+.chip:nth-child(3n){background:var(--t2)}
+.chip:nth-child(5n){background:#fff}
+.chip small{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);font-weight:400}
+.chip.off{opacity:.22;transform:scale(.94)}
+.chip:hover{transform:translateY(-4px) rotate(-1.5deg)}
+
+/* education */
+.edu{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+.box{padding:26px}
+.box h3{font-size:22px;margin-bottom:16px}
+.row{display:flex;justify-content:space-between;gap:14px;padding:12px 0;border-top:1px solid var(--line);font-size:15px}
+.row:first-of-type{border-top:0}
+.row b{display:block;font-weight:600}
+.row span{color:var(--mute);font-size:14px}
+.row time,.row i{font:400 12px var(--mono);color:var(--mute);white-space:nowrap;font-style:normal;padding-top:3px}
+
+button.row{width:100%;background:none;border:0;border-top:1px solid var(--line);font:inherit;color:inherit;text-align:left;cursor:pointer;border-radius:12px;padding:12px 10px;margin:0 -10px;width:calc(100% + 20px);transition:background .25s,transform .25s}
+button.row:hover{background:var(--t1);transform:translateX(4px)}
+.row .prog{background:var(--t2);color:var(--b);padding:4px 10px;border-radius:999px}
+dialog.cm{border:0;padding:0;border-radius:28px;max-width:min(720px,calc(100vw - 32px));width:100%;background:#fff;color:var(--ink);box-shadow:0 30px 80px rgba(35,30,51,.35)}
+dialog.cm::backdrop{background:rgba(35,30,51,.55);backdrop-filter:blur(6px)}
+dialog.cm[open]{animation:pop .35s cubic-bezier(.2,.8,.2,1)}
+@keyframes pop{from{opacity:0;transform:translateY(20px) scale(.96)}}
+.cmin{padding:26px;display:flex;flex-direction:column;gap:16px}
+.cmhead{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.cmhead h3{font-size:clamp(22px,3vw,30px)}
+.cmx{flex:0 0 auto;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:#fff;font-size:18px;cursor:pointer;color:var(--ink)}
+.cmx:hover{background:var(--t1)}
+.cmimg{width:100%;height:auto;border-radius:16px;border:1px solid var(--line);display:block}
+.cmcard{border-radius:18px;padding:26px;background:linear-gradient(140deg,var(--t1),var(--t2));display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cmcard div span{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.cmcard div b{font-size:16px;word-break:break-word}
+.cmcard .full{grid-column:1/-1}
+@media (max-width:600px){.cmcard{grid-template-columns:1fr}}
+
+/* mood */
+.mood{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:center;padding:30px}
+.mood h2{font-size:clamp(28px,3.6vw,44px);margin:10px 0 12px}
+.mood p{color:var(--mute);max-width:44ch}
+.pals{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pals button{display:flex;align-items:center;gap:12px;min-height:60px;padding:0 16px;border-radius:18px;border:2px solid transparent;background:#fff;font:600 15px var(--sans);color:var(--ink);cursor:pointer;transition:transform .25s,border-color .25s}
+.pals button:hover{transform:translateY(-3px)}
+.pals button[aria-pressed="true"]{border-color:var(--a)}
+.sw{display:flex}.sw i{width:18px;height:18px;border-radius:50%;margin-right:-5px;border:2px solid #fff}
+
+/* contact */
+.contact{padding-bottom:40px}
+.contact h2{font-size:clamp(44px,8vw,110px);margin:14px 0 30px}
+.ways{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.way{padding:20px 22px;display:flex;justify-content:space-between;align-items:center;gap:14px;border-radius:22px;text-decoration:none;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+a.way:hover{transform:translateY(-4px)}
+.way span{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.way b{font-size:clamp(15px,1.8vw,19px);font-weight:600;word-break:break-word}
+.way .go{flex:0 0 auto;width:44px;height:44px;border-radius:50%;background:var(--a);color:#fff;display:grid;place-items:center;border:0;cursor:pointer;font:600 12px var(--sans)}
+.way button.go{width:auto;padding:0 16px;border-radius:999px}
+footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:26px 0 40px;margin-top:48px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--mute)}
+footer a{text-decoration:none}
+
+.rv.in{animation:rise .8s cubic-bezier(.2,.8,.2,1) both}
+@keyframes rise{from{opacity:.2;transform:translateY(28px)}}
+.h1l{display:block;overflow:hidden;padding-bottom:.08em}
+.h1l>span{display:block;animation:up .95s cubic-bezier(.2,.8,.2,1) both}
+.h1l:nth-child(2)>span{animation-delay:.12s}.h1l:nth-child(3)>span{animation-delay:.24s}
+@keyframes up{from{transform:translateY(105%)}}
+
+@media (max-width:900px){
+  .herogrid,.about,.card.big,.edu,.mood{grid-template-columns:minmax(0,1fr)}
+  .card{grid-column:span 3}.card.big{grid-column:span 6}
+  .pill{order:3;width:100%;justify-content:space-between}
+  .flipwrap{order:-1}
+}
+@media (max-width:600px){
+  .wrap{padding:0 16px}
+  .card{grid-column:span 6}
+  .stats,.mets{grid-template-columns:minmax(0,1fr)}
+  .ways{grid-template-columns:minmax(0,1fr)}
+  .pill a{padding:10px 9px;font-size:13px}
+  #km{height:280px}
+  .bar{grid-template-columns:78px minmax(0,1fr) 46px}
+  section{padding-top:64px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap navrow">
+    <a class="logo" href="#top" aria-label="Ferdaous Ben Taleb, back to top"><b>Fb</b> Ferdaous Ben Taleb</a>
+    <nav class="pill glass" aria-label="Main">
+      <a href="#about">About</a>
+      <a href="#work">Projects</a>
+      <a href="#experience">Experience</a>
+      <a href="#skills">Skills</a>
+      <a href="#mood">Mood</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="soc">
+      <a href="https://github.com/ferdaous-bt" target="_blank" rel="noopener" aria-label="GitHub">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.8 1.19 1.83 1.19 3.09 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+      </a>
+      <a href="https://linkedin.com/in/ferdaous-ben-taleb-216a48371" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.75h4V21H3zM9.5 9.750h3.800v1.550h.06c.53-1 1.830-1.850 3.640-1.850 3.900 0 4.500 2.400 4.500 5.700V21h-4v-5.200c0-1.300-.03-2.900-1.800-2.900s-2.100 1.350-2.100 2.800V21h-4z"/></svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+<div class="wrap hero">
+  <div class="ghost" aria-hidden="true">FERDAOUS</div>
+  <div class="herogrid">
+    <div>
+      <div class="status glass"><span class="dot" aria-hidden="true"></span>Open to a final-year internship (PFE), January 2027</div>
+      <p class="eyebrow">Data Science &amp; AI engineering student</p>
+      <h1 style="margin-top:14px">
+        <span class="h1l"><span>Turning messy data</span></span>
+        <span class="h1l"><span>into <em>clear</em></span></span>
+        <span class="h1l"><span><em>decisions.</em></span></span>
+      </h1>
+      <div class="me">
+        <img id="avatar" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" width="64" height="64">
+        <p>I'm Ferdaous, a final-year engineering student at École Polytechnique de Sousse. I've completed two data internships and built an end-to-end clinical decision support system for stroke.</p>
+      </div>
+      <div class="cta">
+        <a class="btn fill" href="#work">See my projects <span class="ar" aria-hidden="true">→</span></a>
+        <a class="btn" href="#contact">Get in touch</a>
+      </div>
+    </div>
+    <div class="plot glass">
+      <div class="plothead"><span><strong>k-means</strong> running live in your browser</span><span id="kmstat" aria-live="off">k = 3 · iteration 0</span></div>
+      <canvas id="km" role="img" aria-label="Animated scatter plot: a k-means algorithm groups data points into clusters, step by step"></canvas>
+      <div class="plotfoot">
+        <span>Click the plot to add a point.</span>
+        <div class="mini">
+          <button type="button" id="kminus" aria-label="Fewer clusters">k −</button>
+          <button type="button" id="kplus" aria-label="More clusters">k +</button>
+          <button type="button" id="kshuf">New data</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat glass rv"><b data-count="2">2</b><span>Data internships</span></div>
+    <div class="stat glass rv"><b data-count="4">4</b><span>ML projects shipped</span></div>
+    <div class="stat glass rv"><b data-count="19435" data-sep="1">19,435</b><span>Patients in my largest cohort</span></div>
+  </div>
+</div>
+
+<div class="mq" aria-label="Tools I work with">
+  <div>
+    <span>Python</span><span>SQL</span><span>R</span><span>Scikit-learn</span><span>XGBoost</span><span>TensorFlow</span><span>SHAP</span><span>Pandas</span><span>PostgreSQL</span><span>Streamlit</span><span>Docker</span><span>FastAPI</span>
+    <span aria-hidden="true">Python</span><span aria-hidden="true">SQL</span><span aria-hidden="true">R</span><span aria-hidden="true">Scikit-learn</span><span aria-hidden="true">XGBoost</span><span aria-hidden="true">TensorFlow</span><span aria-hidden="true">SHAP</span><span aria-hidden="true">Pandas</span><span aria-hidden="true">PostgreSQL</span><span aria-hidden="true">Streamlit</span><span aria-hidden="true">Docker</span><span aria-hidden="true">FastAPI</span>
+  </div>
+</div>
+
+<section id="about"><div class="wrap">
+  <div class="sechead rv">
+    <p class="eyebrow">About</p>
+    <h2>Models people can <em>trust.</em></h2>
+  </div>
+  <div class="about">
+    <div class="txt rv">
+      <h3>Hi, I'm Ferdaous.</h3>
+      <p>I work in Python, SQL and R across the machine learning and deep learning stack: Scikit-learn, XGBoost, TensorFlow and SHAP.</p>
+      <p>I care about what happens after the notebook. I check for leakage, measure the gap between train and test, and explain predictions so the people using a model can question it.</p>
+      <p>My projects go end to end, from scraping and cleaning to an API, a dashboard or a full web app.</p>
+      <a class="btn" href="https://github.com/ferdaous-bt" target="_blank" rel="noopener" style="margin-top:8px">GitHub <span class="ar" aria-hidden="true">↗</span></a>
+    </div>
+    <div class="flipwrap rv">
+      <div class="clip" aria-hidden="true"></div>
+      <button class="flip" type="button" id="flip" aria-pressed="false" aria-label="Flip the ID card">
+        <div class="flipin">
+          <div class="face">
+            <div class="idtop"><span>Data scientist ID</span><span aria-hidden="true">2027</span></div>
+            <div class="idbody">
+              <img class="idphoto" src="data:image/jpeg;base64,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" alt="Portrait of Ferdaous Ben Taleb" width="640" height="736">
+              <strong>Ferdaous Ben Taleb</strong>
+              <small>Data Science &amp; AI engineering student</small>
+            </div>
+            <div class="idgrid">
+              <div><span>Based in</span><br>Tunisia</div>
+              <div><span>Stack</span><br>Python · SQL · R</div>
+            </div>
+          </div>
+          <div class="face back">
+            <span class="hint" style="color:rgba(255,255,255,.8)">What I bring</span>
+            <h3>From raw data to a decision.</h3>
+            <ul>
+              <li>Machine learning with Scikit-learn and XGBoost</li>
+              <li>Deep learning with TensorFlow and Keras</li>
+              <li>Explainability with SHAP and Grad-CAM</li>
+              <li>Pipelines with SQL, PostgreSQL and Docker</li>
+              <li>Dashboards with Streamlit</li>
+            </ul>
+          </div>
+        </div>
+      </button>
+      <span class="hint">Hover or tap to flip</span>
+    </div>
+    <div class="facts rv">
+      <p class="eyebrow">A little more</p>
+      <div><span>School</span><b>École Polytechnique de Sousse</b></div>
+      <div><span>Languages</span><b>Arabic, French, English</b></div>
+      <div><span>Focus</span><b>Machine learning and data analytics</b></div>
+      <div><span>Looking for</span><b>PFE internship, 4 to 6 months, from January 2027</b></div>
+    </div>
+  </div>
+</div></section>
+
+<section id="work"><div class="wrap">
+  <div class="sechead rv">
+    <p class="eyebrow">Selected projects</p>
+    <h2>Projects with <em>numbers.</em></h2>
+    <p>Every figure below comes from the project's own evaluation.</p>
+  </div>
+  <div class="proj">
+
+    <article class="card big glass rv tilt">
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="kind"><span>AI research project · healthcare</span><span>2025 – 2026</span></div>
+        <h3>NeuroPredict, stroke <em>decision support</em></h3>
+        <p>A decision support system for neurologists, trained on the International Stroke Trial cohort of 19,435 patients.</p>
+        <ul>
+          <li>Benchmarked 5 algorithms and automated the Bamford rule for OCSP subtype classification.</li>
+          <li>Designed an original Fuzzy-Logic Severity Index, confirmed in the top 15 SHAP features (+0.006 AUC in ablation).</li>
+          <li>Built a three-tier app with role-based access, an audit log and a physician validation loop.</li>
+        </ul>
+        <div class="tags"><span>Python</span><span>XGBoost</span><span>SHAP</span><span>FastAPI</span><span>Angular 17</span><span>Node.js</span><span>MongoDB</span></div>
+        <a class="more" href="https://github.com/ferdaous-bt" target="_blank" rel="noopener">View on GitHub <span aria-hidden="true">↗</span></a>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="mets">
+          <div class="met"><b data-count="0.999" data-dec="3">0.999</b><span>macro F1, subtype classification</span></div>
+          <div class="met"><b data-count="0.816" data-dec="3">0.816</b><span>ROC-AUC, 6-month mortality</span></div>
+          <div class="met"><b data-count="5">5</b><span>algorithms benchmarked</span></div>
+        </div>
+        <div class="viz">
+          <span class="cap">TRAIN / TEST GAP AFTER REGULARIZATION (LOWER IS BETTER)</span>
+          <div class="bar alt"><span>Before</span><i><u style="width:100%"></u></i><b>0.15</b></div>
+          <div class="bar"><span>After</span><i><u style="width:26%"></u></i><b>0.039</b></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card glass rv tilt">
+      <div class="kind"><span>Classification</span><span>2026</span></div>
+      <div class="viz">
+        <div class="ring">
+          <svg width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="28 percent of drugs were never distributed">
+            <circle cx="48" cy="48" r="42" fill="none" stroke="rgba(255,255,255,.75)" stroke-width="10"/>
+            <circle class="v" cx="48" cy="48" r="42" fill="none" stroke-width="10" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="190" transform="rotate(-90 48 48)"/>
+          </svg>
+          <div><b>28%</b><span>of 6,053 Tunisian drugs were never distributed</span></div>
+        </div>
+      </div>
+      <h3>Drug distribution <em>risk</em></h3>
+      <p>A classifier that predicts pharmacy distribution, from scraping and EDA to a Streamlit app with SHAP explanations.</p>
+      <div class="mets" style="grid-template-columns:1fr 1fr">
+        <div class="met"><b data-count="0.81" data-dec="2">0.81</b><span>F1 score</span></div>
+        <div class="met"><b data-count="0.891" data-dec="3">0.891</b><span>AUC</span></div>
+      </div>
+      <div class="tags"><span>XGBoost</span><span>SMOTE</span><span>SHAP</span><span>Streamlit</span></div>
+      <a class="more" href="https://github.com/ferdaous-bt" target="_blank" rel="noopener">View on GitHub <span aria-hidden="true">↗</span></a>
+    </article>
+
+    <article class="card glass rv tilt">
+      <div class="kind"><span>Computer vision</span><span>2026</span></div>
+      <div class="viz">
+        <span class="cap">MACRO F1 ON RAF-DB, 7 CLASSES</span>
+        <div class="bar alt"><span>Start</span><i><u style="width:17%"></u></i><b>0.08</b></div>
+        <div class="bar"><span>Best</span><i><u style="width:100%"></u></i><b>0.47</b></div>
+      </div>
+      <h3>Facial emotion <em>recognition</em></h3>
+      <p>A custom CNN compared with ResNet50 and EfficientNetB0 transfer learning on 15,339 images. A 17:1 class imbalance handled with class weights and augmentation.</p>
+      <div class="tags"><span>TensorFlow / Keras</span><span>ResNet50</span><span>EfficientNetB0</span><span>Grad-CAM</span></div>
+      <a class="more" href="https://github.com/ferdaous-bt" target="_blank" rel="noopener">View on GitHub <span aria-hidden="true">↗</span></a>
+    </article>
+
+    <article class="card glass rv tilt">
+      <div class="kind"><span>Model comparison</span><span>2025</span></div>
+      <div class="viz">
+        <div class="ring">
+          <svg width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="76 percent accuracy">
+            <circle cx="48" cy="48" r="42" fill="none" stroke="rgba(255,255,255,.75)" stroke-width="10"/>
+            <circle class="v" cx="48" cy="48" r="42" fill="none" stroke-width="10" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="63" transform="rotate(-90 48 48)"/>
+          </svg>
+          <div><b>76%</b><span>accuracy with Random Forest</span></div>
+        </div>
+      </div>
+      <h3>Diabetes <em>prediction</em></h3>
+      <p>Logistic Regression, Random Forest and SVM compared on 768 patients. Random Forest produced 42% fewer false negatives.</p>
+      <div class="tags"><span>Scikit-learn</span><span>Pandas</span><span>NumPy</span></div>
+      <a class="more" href="https://github.com/ferdaous-bt" target="_blank" rel="noopener">View on GitHub <span aria-hidden="true">↗</span></a>
+    </article>
+
+  </div>
+</div></section>
+
+<section id="experience"><div class="wrap">
+  <div class="sechead rv">
+    <p class="eyebrow">Experience</p>
+    <h2>Two internships, <em>real data.</em></h2>
+  </div>
+  <div class="tl">
+    <article class="job glass rv">
+      <div class="jobtop"><h3>GoCaddie</h3><span class="when">Aug. 2026 – Oct. 2026</span></div>
+      <p class="role">Data Science &amp; Analytics intern</p>
+      <ul>
+        <li>Built an end-to-end user activation and drop-off analytics platform with Python, SQL and PostgreSQL.</li>
+        <li>Automated an Amplitude API pipeline: data cleaning, user pseudonymization and analytical data modeling.</li>
+        <li>Created an interactive Streamlit dashboard for onboarding funnels, conversion and engagement.</li>
+        <li>Engineered leakage-safe behavioral features and evaluated Logistic Regression and Random Forest with stratified cross-validation.</li>
+        <li>Containerized the solution with Docker and automated daily data refreshes.</li>
+      </ul>
+    </article>
+    <article class="job glass rv">
+      <div class="jobtop"><h3>Ditra Système</h3><span class="when">Jul. 2025 – Aug. 2025 · Tunisia</span></div>
+      <p class="role">Data Analyst intern</p>
+      <ul>
+        <li>Analyzed business data with Pandas and NumPy to deliver weekly decision-support reports.</li>
+        <li>Designed and automated data cleaning pipelines, reducing manual processing time by 40%.</li>
+        <li>Built visualizations with Matplotlib and Seaborn for non-technical audiences.</li>
+      </ul>
+    </article>
+  </div>
+</div></section>
+
+<section id="skills"><div class="wrap">
+  <div class="sechead rv">
+    <p class="eyebrow">Skills</p>
+    <h2>Stack meets <em>curiosity.</em></h2>
+  </div>
+  <div class="filters" role="group" aria-label="Filter skills" id="filters"></div>
+  <div class="chips rv" id="chips"></div>
+</div></section>
+
+<section id="education"><div class="wrap">
+  <div class="sechead rv">
+    <p class="eyebrow">Education and certifications</p>
+    <h2>Always <em>learning.</em></h2>
+  </div>
+  <div class="edu">
+    <div class="box glass rv">
+      <h3>Education</h3>
+      <div class="row"><div><b>École Polytechnique de Sousse</b><span>Engineering degree in Data Science &amp; Artificial Intelligence</span></div><time>2024 – 2027</time></div>
+      <div class="row"><div><b>EPI Digital School</b><span>Preparatory cycle, Computer Science</span></div><time>2022 – 2024</time></div>
+    </div>
+    <div class="box glass rv">
+      <h3>Certifications</h3>
+      <p class="hint" style="margin:-8px 0 8px">Click a certificate to open it</p>
+      <button type="button" class="row cert" data-t="Statistics" data-o="365 Data Science" data-d="Nov 2026" data-id="CC-88AF2B7B4D" data-url="https://learn.365datascience.com/certificates/CC-88AF2B7B4D/" data-img=""><div><b>Statistics</b><span>365 Data Science</span></div><i>Nov 2026 <span aria-hidden="true">↗</span></i></button>
+      <button type="button" class="row cert" data-t="Intermediate R" data-o="DataCamp" data-d="Oct 2026" data-id="c1d28c78614eb87e5e9109d5ec1205453c0e5e86" data-url="https://www.datacamp.com/statement-of-accomplishment/course/c1d28c78614eb87e5e9109d5ec1205453c0e5e86?raw=1" data-img=""><div><b>Intermediate R</b><span>DataCamp</span></div><i>Oct 2026 <span aria-hidden="true">↗</span></i></button>
+      <button type="button" class="row cert" data-t="Introduction to R" data-o="DataCamp" data-d="Oct 2026" data-id="9cfd09c65eadc728c8705b93565254ff0c6e33e6" data-url="https://www.datacamp.com/statement-of-accomplishment/course/9cfd09c65eadc728c8705b93565254ff0c6e33e6?raw=1" data-img=""><div><b>Introduction to R</b><span>DataCamp</span></div><i>Oct 2026 <span aria-hidden="true">↗</span></i></button>
+      <button type="button" class="row cert" data-t="Unsupervised Learning in Python" data-o="DataCamp" data-d="Mar 2026" data-id="46,631,805" data-url="https://www.datacamp.com/statement-of-accomplishment/course/d6ed349dc9ad55d0ee0d1fff7743f33faef016ae?raw=1" data-img=""><div><b>Unsupervised Learning in Python</b><span>DataCamp</span></div><i>Mar 2026 <span aria-hidden="true">↗</span></i></button>
+      <button type="button" class="row cert" data-t="Python Data Analysis &amp; Visualization Masterclass" data-o="Udemy" data-d="Mar 2026" data-id="UC-257e8c2d-54d7-4b10-9f54-8e0cd4d4fb5d" data-url="https://ude.my/UC-257e8c2d-54d7-4b10-9f54-8e0cd4d4fb5d" data-img=""><div><b>Python Data Analysis &amp; Visualization Masterclass</b><span>Udemy</span></div><i>Mar 2026 <span aria-hidden="true">↗</span></i></button>
+      <button type="button" class="row cert" data-t="Supervised Learning with scikit-learn" data-o="DataCamp" data-d="Feb 2026" data-id="46,026,642" data-url="https://www.datacamp.com/completed/statement-of-accomplishment/course/4457ffafe9bb3e01cdcb52f056d7d9bfe0a4ffba" data-img=""><div><b>Supervised Learning with scikit-learn</b><span>DataCamp</span></div><i>Feb 2026 <span aria-hidden="true">↗</span></i></button>
+      <div class="row"><div><b>Machine Learning for Natural Language Processing</b><span>AWS Academy</span></div></div>
+    </div>
+  </div>
+</div></section>
+
+<section id="mood"><div class="wrap">
+  <div class="mood glass rv">
+    <div>
+      <p class="eyebrow">Make it yours</p>
+      <h2>Pick your <em>mood.</em></h2>
+      <p>Choose a palette and the whole page follows, the live plot included.</p>
+    </div>
+    <div class="pals" role="group" aria-label="Choose a palette" id="pals">
+      <button type="button" data-mood="iris" aria-pressed="true"><span class="sw" aria-hidden="true"><i style="background:#5B4BC4"></i><i style="background:#B5406D"></i><i style="background:#E2DCFA"></i></span>Iris</button>
+      <button type="button" data-mood="lagoon" aria-pressed="false"><span class="sw" aria-hidden="true"><i style="background:#0B6E78"></i><i style="background:#4450B8"></i><i style="background:#D2ECEC"></i></span>Lagoon</button>
+      <button type="button" data-mood="sunset" aria-pressed="false"><span class="sw" aria-hidden="true"><i style="background:#B04A14"></i><i style="background:#A8346A"></i><i style="background:#FBE0C8"></i></span>Sunset</button>
+      <button type="button" data-mood="sage" aria-pressed="false"><span class="sw" aria-hidden="true"><i style="background:#2E6A4B"></i><i style="background:#86457A"></i><i style="background:#DAEBDD"></i></span>Sage</button>
+    </div>
+  </div>
+</div></section>
+
+<section id="contact" class="contact"><div class="wrap">
+  <p class="eyebrow rv">Let's connect</p>
+  <h2 class="rv">Have an internship? <em>Let's talk.</em></h2>
+  <div class="ways">
+    <div class="way glass rv">
+      <div><span>Email</span><b><a href="mailto:bentaleb.ferdaous3@gmail.com" style="text-decoration:none">bentaleb.ferdaous3@gmail.com</a></b></div>
+      <button class="go" type="button" id="copy">Copy</button>
+    </div>
+    <div class="way glass rv">
+      <div><span>Phone</span><b><a href="tel:+21625275662" style="text-decoration:none">+216 25 275 662</a></b></div>
+    </div>
+    <a class="way glass rv" href="https://linkedin.com/in/ferdaous-ben-taleb-216a48371" target="_blank" rel="noopener">
+      <div><span>LinkedIn</span><b>ferdaous-ben-taleb</b></div><i class="go" aria-hidden="true" style="font-style:normal">↗</i>
+    </a>
+    <a class="way glass rv" href="https://github.com/ferdaous-bt" target="_blank" rel="noopener">
+      <div><span>GitHub</span><b>ferdaous-bt</b></div><i class="go" aria-hidden="true" style="font-style:normal">↗</i>
+    </a>
+  </div>
+  <footer>
+    <span>© 2026 Ferdaous Ben Taleb</span>
+    <a href="#top">Back to top ↑</a>
+  </footer>
+</div></section>
+</main>
+
+<dialog class="cm" id="cm" aria-labelledby="cmt">
+  <div class="cmin">
+    <div class="cmhead">
+      <div><p class="eyebrow" id="cmo"></p><h3 id="cmt" style="margin-top:8px"></h3></div>
+      <button type="button" class="cmx" id="cmx" aria-label="Close">✕</button>
+    </div>
+    <img class="cmimg" id="cmimg" alt="" hidden>
+    <div class="cmcard" id="cmcard">
+      <div><span>Issued by</span><b id="cmo2"></b></div>
+      <div><span>Issued</span><b id="cmd"></b></div>
+      <div class="full"><span>Credential ID</span><b id="cmid"></b></div>
+    </div>
+    <a class="btn fill" id="cmurl" href="#" target="_blank" rel="noopener" style="align-self:flex-start">Open the official certificate <span class="ar" aria-hidden="true">↗</span></a>
+  </div>
+</dialog>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var root = document.documentElement;
+  document.getElementById('avatar').src = document.querySelector('.idphoto').src;
+
+  /* ---------- skills ---------- */
+  var SK = [
+    ['Python','lang','advanced'],['SQL','lang'],['R','lang'],
+    ['Scikit-learn','ml'],['XGBoost','ml'],['Classification','ml'],['Regression','ml'],['Clustering','ml'],['Feature engineering','ml'],['SMOTE','ml'],['SHAP','ml'],['Fuzzy logic','ml'],
+    ['TensorFlow / Keras','dl'],['CNNs','dl'],['Transfer learning','dl'],['Data augmentation','dl'],['Grad-CAM','dl'],
+    ['Pandas','data'],['NumPy','data'],['EDA','data'],['Statistics','data'],['Matplotlib','data'],['Seaborn','data'],['Streamlit','data'],['BI dashboards','data'],
+    ['PostgreSQL','eng'],['ETL','eng'],['PygramETL','eng'],['Star schema','eng'],['Data warehousing','eng'],['Web scraping','eng'],
+    ['Git','tool'],['Docker','tool'],['FastAPI','tool'],['Node.js / Express','tool'],['Angular','tool'],['MongoDB','tool'],['Jupyter','tool'],['Excel','tool']
+  ];
+  var CATS = [['all','All'],['lang','Languages'],['ml','ML / AI'],['dl','Deep learning'],['data','Analysis / BI'],['eng','Data engineering'],['tool','Tools']];
+  var names = {lang:'Language',ml:'ML / AI',dl:'Deep learning',data:'Analysis',eng:'Engineering',tool:'Tool'};
+  var chips = document.getElementById('chips'), filters = document.getElementById('filters');
+  SK.forEach(function(s){
+    var d = document.createElement('div'); d.className = 'chip'; d.dataset.c = s[1];
+    var sm = document.createElement('small'); sm.textContent = s[2] ? names[s[1]] + ' · ' + s[2] : names[s[1]];
+    d.appendChild(sm); d.appendChild(document.createTextNode(s[0])); chips.appendChild(d);
+  });
+  CATS.forEach(function(c, i){
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = c[1]; b.dataset.c = c[0];
+    b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+    b.addEventListener('click', function(){
+      filters.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      chips.querySelectorAll('.chip').forEach(function(ch){ ch.classList.toggle('off', c[0] !== 'all' && ch.dataset.c !== c[0]); });
+    });
+    filters.appendChild(b);
+  });
+
+  /* ---------- flip card ---------- */
+  var flip = document.getElementById('flip');
+  flip.addEventListener('click', function(){ flip.setAttribute('aria-pressed', flip.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'); });
+
+  /* ---------- copy email ---------- */
+  var copy = document.getElementById('copy');
+  copy.addEventListener('click', function(){
+    var done = function(t){ copy.textContent = t; setTimeout(function(){ copy.textContent = 'Copy'; }, 1800); };
+    try { navigator.clipboard.writeText('bentaleb.ferdaous3@gmail.com').then(function(){ done('Copied'); }, function(){ done('Select it'); }); }
+    catch (e) { done('Select it'); }
+  });
+
+  /* ---------- certificates ---------- */
+  var cm = document.getElementById('cm'), $ = function(id){ return document.getElementById(id); };
+  document.querySelectorAll('.cert').forEach(function(b){
+    b.addEventListener('click', function(){
+      var d = b.dataset;
+      $('cmt').textContent = b.querySelector('b').textContent; $('cmo').textContent = d.o; $('cmo2').textContent = d.o;
+      $('cmd').textContent = d.d; $('cmid').textContent = d.id; $('cmurl').href = d.url;
+      var im = $('cmimg');
+      if (d.img) { im.src = d.img; im.alt = 'Certificate: ' + b.querySelector('b').textContent; im.hidden = false; } else { im.hidden = true; im.removeAttribute('src'); }
+      if (cm.showModal) cm.showModal(); else cm.setAttribute('open', '');
+    });
+  });
+  $('cmx').addEventListener('click', function(){ cm.close ? cm.close() : cm.removeAttribute('open'); });
+  cm.addEventListener('click', function(ev){ if (ev.target === cm && cm.close) cm.close(); });
+
+  /* ---------- count up ---------- */
+  function fmt(v, dec, sep){ var s = v.toFixed(dec); return sep ? s.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : s; }
+  function count(el){
+    if (el._done || reduce) return; el._done = true;
+    var to = parseFloat(el.dataset.count), dec = +(el.dataset.dec || 0), sep = !!el.dataset.sep, t0 = performance.now(), dur = 1300;
+    (function tick(now){
+      var p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = fmt(to * e, dec, sep);
+      if (p < 1) requestAnimationFrame(tick); else el.textContent = fmt(to, dec, sep);
+    })(t0);
+  }
+
+  /* ---------- reveal on scroll (content is visible before it plays) ---------- */
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if (!e.isIntersecting) return;
+        e.target.classList.add('in');
+        e.target.querySelectorAll('[data-count]').forEach(count);
+        io.unobserve(e.target);
+      });
+    }, {threshold: .12});
+    document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+
+    var links = document.querySelectorAll('.pill a');
+    var spy = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if (e.isIntersecting) links.forEach(function(a){ a.classList.toggle('on', a.getAttribute('href') === '#' + e.target.id); });
+      });
+    }, {rootMargin: '-45% 0px -50% 0px'});
+    document.querySelectorAll('main section[id]').forEach(function(s){ spy.observe(s); });
+  }
+
+  /* ---------- tilt on project cards ---------- */
+  if (!reduce && matchMedia('(hover:hover)').matches) {
+    document.querySelectorAll('.tilt').forEach(function(c){
+      c.addEventListener('mousemove', function(ev){
+        var r = c.getBoundingClientRect(), x = (ev.clientX - r.left) / r.width - .5, y = (ev.clientY - r.top) / r.height - .5;
+        var k = c.classList.contains('big') ? 2.5 : 6;
+        c.style.transform = 'perspective(900px) rotateX(' + (-y * k).toFixed(2) + 'deg) rotateY(' + (x * k).toFixed(2) + 'deg) translateY(-6px)';
+      });
+      c.addEventListener('mouseleave', function(){ c.style.transform = ''; });
+    });
+  }
+
+  /* ---------- live k-means ---------- */
+  var cv = document.getElementById('km'), ctx = cv.getContext('2d'), stat = document.getElementById('kmstat');
+  var W = 0, H = 0, pts = [], cen = [], k = 3, iter = 0, done = false, last = 0, restAt = 0, visible = true, cols = [];
+  var EXTRA = ['#C9891A', '#2E8F96', '#7A7F99'];
+  function readCols(){
+    var cs = getComputedStyle(root);
+    cols = [cs.getPropertyValue('--a').trim(), cs.getPropertyValue('--b').trim()].concat(EXTRA);
+    cols.mute = cs.getPropertyValue('--mute').trim();
+    cols.ink = cs.getPropertyValue('--ink').trim();
+  }
+  function size(){
+    var r = cv.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+    W = r.width; H = r.height; cv.width = Math.round(W * d); cv.height = Math.round(H * d); ctx.setTransform(d, 0, 0, d, 0, 0);
+  }
+  function gauss(){ var u = 0, v = 0; while (!u) u = Math.random(); while (!v) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+  function clamp(v){ return Math.max(.05, Math.min(.95, v)); }
+  function newData(){
+    pts = []; var g = 3 + Math.floor(Math.random() * 2), centers = [];
+    for (var i = 0; i < g; i++) centers.push([.18 + Math.random() * .64, .2 + Math.random() * .6]);
+    for (var j = 0; j < 96; j++) { var c = centers[j % g]; pts.push({x: clamp(c[0] + gauss() * .075), y: clamp(c[1] + gauss() * .09), c: -1}); }
+    initCen();
+  }
+  function initCen(){
+    cen = []; var used = {};
+    while (cen.length < k) { var i = Math.floor(Math.random() * pts.length); if (used[i]) continue; used[i] = 1; cen.push({x: pts[i].x, y: pts[i].y, dx: pts[i].x, dy: pts[i].y}); }
+    pts.forEach(function(p){ p.c = -1; }); iter = 0; done = false; restAt = 0; label();
+  }
+  function label(){ stat.textContent = 'k = ' + k + ' · iteration ' + iter + (done ? ' · converged' : ''); }
+  function step(){
+    var changed = 0;
+    pts.forEach(function(p){
+      var best = 0, bd = 1e9;
+      for (var i = 0; i < cen.length; i++) { var dx = p.x - cen[i].x, dy = p.y - cen[i].y, d = dx * dx + dy * dy; if (d < bd) { bd = d; best = i; } }
+      if (p.c !== best) { p.c = best; changed++; }
+    });
+    cen.forEach(function(c, i){
+      var sx = 0, sy = 0, n = 0;
+      pts.forEach(function(p){ if (p.c === i) { sx += p.x; sy += p.y; n++; } });
+      if (n) { c.x = sx / n; c.y = sy / n; }
+    });
+    iter++; if (!changed) { done = true; iter--; }
+    label();
+  }
+  function draw(){
+    ctx.clearRect(0, 0, W, H);
+    ctx.strokeStyle = 'rgba(35,30,51,.07)'; ctx.lineWidth = 1;
+    for (var gx = 1; gx < 8; gx++) { ctx.beginPath(); ctx.moveTo(W * gx / 8, 0); ctx.lineTo(W * gx / 8, H); ctx.stroke(); }
+    for (var gy = 1; gy < 5; gy++) { ctx.beginPath(); ctx.moveTo(0, H * gy / 5); ctx.lineTo(W, H * gy / 5); ctx.stroke(); }
+    pts.forEach(function(p){
+      if (p.c < 0) return; var c = cen[p.c];
+      ctx.globalAlpha = .16; ctx.strokeStyle = cols[p.c]; ctx.beginPath(); ctx.moveTo(p.x * W, p.y * H); ctx.lineTo(c.dx * W, c.dy * H); ctx.stroke();
+    });
+    ctx.globalAlpha = 1;
+    pts.forEach(function(p){
+      ctx.fillStyle = p.c < 0 ? cols.mute : cols[p.c]; ctx.globalAlpha = p.c < 0 ? .45 : .9;
+      ctx.beginPath(); ctx.arc(p.x * W, p.y * H, 4.2, 0, 6.2832); ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    cen.forEach(function(c, i){
+      var x = c.dx * W, y = c.dy * H;
+      ctx.fillStyle = '#fff'; ctx.strokeStyle = cols[i]; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(x, y, 11, 0, 6.2832); ctx.fill(); ctx.stroke();
+      ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x - 4, y); ctx.lineTo(x + 4, y); ctx.moveTo(x, y - 4); ctx.lineTo(x, y + 4); ctx.stroke();
+    });
+  }
+  function frame(now){
+    if (visible) {
+      cen.forEach(function(c){ c.dx += (c.x - c.dx) * .12; c.dy += (c.y - c.dy) * .12; });
+      if (!done && now - last > 850) { last = now; step(); if (done) restAt = now + 3200; }
+      if (done && restAt && now > restAt) newData();
+      draw();
+    }
+    requestAnimationFrame(frame);
+  }
+  function settle(){ var g = 0; while (!done && g++ < 60) step(); cen.forEach(function(c){ c.dx = c.x; c.dy = c.y; }); draw(); }
+  function restart(fresh){ if (fresh) newData(); else initCen(); if (reduce) settle(); }
+
+  readCols(); size(); newData();
+  if (reduce) settle(); else requestAnimationFrame(frame);
+  window.addEventListener('resize', function(){ size(); if (reduce) draw(); });
+  if ('IntersectionObserver' in window) new IntersectionObserver(function(es){ visible = es[0].isIntersecting; }).observe(cv);
+  cv.addEventListener('click', function(ev){
+    var r = cv.getBoundingClientRect();
+    pts.push({x: (ev.clientX - r.left) / r.width, y: (ev.clientY - r.top) / r.height, c: -1});
+    done = false; restAt = 0; if (reduce) settle();
+  });
+  document.getElementById('kshuf').addEventListener('click', function(){ restart(true); });
+  document.getElementById('kplus').addEventListener('click', function(){ if (k < 5) { k++; restart(false); } });
+  document.getElementById('kminus').addEventListener('click', function(){ if (k > 2) { k--; restart(false); } });
+
+  /* ---------- mood ---------- */
+  var pals = document.getElementById('pals');
+  function setMood(m, save){
+    if (m === 'iris') root.removeAttribute('data-mood'); else root.setAttribute('data-mood', m);
+    pals.querySelectorAll('button').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.mood === m ? 'true' : 'false'); });
+    readCols(); if (reduce) draw();
+    if (save) { try { localStorage.setItem('fbt-mood', m); } catch (e) {} }
+  }
+  pals.addEventListener('click', function(ev){ var b = ev.target.closest('button'); if (b) setMood(b.dataset.mood, true); });
+  try { var saved = localStorage.getItem('fbt-mood'); if (saved && pals.querySelector('[data-mood="' + saved + '"]')) setMood(saved, false); } catch (e) {}
+})();
+</script>
+</body>
+</html>
